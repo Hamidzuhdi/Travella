@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+import re
+import string
 
 app = Flask(__name__)
 
@@ -31,6 +35,32 @@ merged_data, grouped_data, place_avg_rating = preprocess_data()
 # Split data into train and test sets (80-20 split)
 train_data, test_data = train_test_split(grouped_data, test_size=0.2, random_state=42)
 
+# Text preprocessing function
+def preprocess_text(text):
+    # Case folding
+    text = text.lower()
+    # Remove punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    # Tokenization
+    tokens = text.split()
+    # Remove stop words (elimination and filtering)
+    stop_words = set(['dan', 'di', 'ke', 'dari', 'yang', 'untuk', 'pada', 'dengan', 'sebagai', 'adalah', 'ini', 'itu'])
+    tokens = [word for word in tokens if word not in stop_words]
+    return ' '.join(tokens)
+
+# Preprocess descriptions
+tourism_with_id['processed_description'] = tourism_with_id['Description'].apply(preprocess_text)
+
+# Convert category names to lowercase
+tourism_with_id['Category'] = tourism_with_id['Category'].str.lower()
+
+# Calculate TF-IDF matrix
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(tourism_with_id['processed_description'])
+
+# Calculate similarity matrix
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
 @app.route('/recommend', methods=['GET'])
 def recommend():
     user_id = request.args.get('User_Id', type=int)
@@ -51,12 +81,6 @@ def recommend():
     
     if user_ratings.empty:
         return jsonify({"error": "No data found for this user"}), 404
-    
-    # Filter places visited by the user with a rating of 5
-    user_ratings = user_ratings[user_ratings['Place_Ratings'] == 5]
-    
-    if user_ratings.empty:
-        return jsonify({"error": "No places with a rating of 5 found for this user"}), 404
     
     # Sort places visited by the user by rating (highest to lowest)
     sorted_ratings = user_ratings.sort_values(by='Place_Ratings', ascending=False)
@@ -98,48 +122,54 @@ def recommend():
     })
 
 @app.route('/category/<category_name>', methods=['GET'])
-def category(category_name):
-    # Define the valid categories
-    valid_categories = ['budaya', 'tamanhiburan', 'cagar alam', 'bahari', 'pusat pembelanjaan', 'tempat ibadah']
+def kategori(category_name):
+    # Convert category_name to lowercase
+    category_name = category_name.lower()
     
-    if category_name not in valid_categories:
-        return jsonify({"error": "Invalid category"}), 400
-    
-    # Log the category name for debugging
-    print(f"Category requested: {category_name}")
-    
-    # Filter places by the given category
-    category_places = tourism_with_id[tourism_with_id['Category'].str.lower() == category_name.lower()]
+    # Filter places by category
+    category_places = tourism_with_id[tourism_with_id['Category'] == category_name]
     
     if category_places.empty:
-        print(f"No places found for category: {category_name}")
-        return jsonify({"error": "No places found for this category"}), 404
+        return jsonify({"error": "Category not found"}), 404
     
-    # Merge with ratings to get the average rating for each place
-    category_ratings = pd.merge(category_places, place_avg_rating, on='Place_Id')
+    # Get the indices of the places in the category
+    indices = category_places.index.tolist()
     
-    # Check if 'Place_Name' column exists after merge
-    if 'Place_Name' not in category_ratings.columns:
-        print("Column 'Place_Name' not found after merge")
-        return jsonify({"error": "Internal server error"}), 500
+    # Calculate similarity scores for places in the category
+    sim_scores = []
+    for idx in indices:
+        score = cosine_sim[idx].mean()
+        sim_scores.append((idx, score))
     
-    # Sort by average rating and get the top 20
-    top_places = category_ratings.sort_values(by='avg_rating', ascending=False).head(20)
+    # Sort places by similarity scores in descending order
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     
-    # Prepare the response data
-    top_places_list = []
-    for _, row in top_places.iterrows():
-        top_places_list.append({
-            "place_name": row['Place_Name'],
-            "rating": float(row['avg_rating']),  # Convert to Python float
-            "description": row.get('Description', 'No description available')  # Assuming there's a 'Description' column
+    # Take top 20 places
+    top_20_sim_scores = sim_scores[:20]
+    
+    # Prepare recommendations
+    recommendations = []
+    for idx, score in top_20_sim_scores:
+        place = tourism_with_id.iloc[idx]
+        recommendations.append({
+            "Place_Id": int(place['Place_Id']),
+            "Place_Name": place['Place_Name'],
+            "Description": place['Description'],
+            "Category": place['Category'],
+            "City": place['City'],
+            "Price": int(place['Price']) if not pd.isna(place['Price']) else None,
+            "Rating": float(place['Rating']),
+            "Time_Minutes": int(place['Time_Minutes']) if not pd.isna(place['Time_Minutes']) else None,
+            "Coordinate": place['Coordinate'],
+            "Lat": float(place['Lat']),
+            "Long": float(place['Long']),
+            "Similarity_Score": round(score * 100, 2)  # Convert to percentage
         })
     
     return jsonify({
         "Category": category_name,
-        "Top_Places": top_places_list
+        "Recommendations": recommendations
     })
-
 
 if __name__ == '__main__':
     app.run(debug=True)
