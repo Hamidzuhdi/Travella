@@ -8,9 +8,17 @@ ratings = pd.read_csv("data/preprocessed_ratings.csv")
 users = pd.read_csv("data/preprocessed_users.csv")
 
 # === 2. Pisahkan Fitur untuk Rekomendasi ===
-# Ambil semua kolom fitur kecuali kolom ID dan kolom non-fitur
+# Ambil semua kolom fitur kecuali kolom ID dan kolom non-fitur dengan fitur2 dari pengolahan tf idf dan encoding kategori dan kota
 exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long']
 feature_columns = [col for col in tourism.columns if col not in exclude_columns]
+
+category_columns_encode = [col for col in feature_columns if col.startswith('Category_')] 
+city_columns_encode = [col for col in feature_columns if col.startswith('City_')]
+
+tourism[category_columns_encode] *= 2
+tourism[city_columns_encode] *= 1.5
+
+
 #print(feature_columns)
 final_feature_matrix = tourism[feature_columns].values
 
@@ -31,9 +39,13 @@ def recommend_place(user_id, top_n=5, category=None, city=None):
         print("Pengguna belum memberi rating. Menggunakan fallback berbasis kesamaan.")
         recommendations = tourism.copy()
         if category:
-            recommendations = recommendations[recommendations['Category'] == category]
+            category_col = f"Category_{category.replace(' ', '_')}"
+            # recommendations = recommendations[recommendations['Category'] == category]
+            recommendations = recommendations[recommendations[category_col] == 1]
         if city:
-            recommendations = recommendations[recommendations['City'] == city]
+            city_col = f"City_{city.replace(' ', '_')}"
+            # recommendations = recommendations[recommendations['City'] == city]
+            recommendations = recommendations[recommendations[city_col] == 1]
         
         # Hitung cosine similarity sebagai fallback
         subset_ids = recommendations['Place_Id']
@@ -48,6 +60,8 @@ def recommend_place(user_id, top_n=5, category=None, city=None):
     top_place_category = tourism[tourism['Place_Id'] == top_place_id]['Category'].values[0]
     top_place_city = tourism[tourism['Place_Id'] == top_place_id]['City'].values[0]
     top_place_rating = tourism[tourism['Place_Id'] == top_place_id]['Rating'].values[0]
+    
+    top_place_info = tourism[tourism['Place_Id'] == top_place_id].copy()
     
     print(f"Tempat wisata yang disukai: {top_place_name}")
     print(f"Kategori: {top_place_category}, Kota: {top_place_city}, Rating: {top_place_rating}")
@@ -68,30 +82,48 @@ def recommend_place(user_id, top_n=5, category=None, city=None):
     
     # Filter berdasarkan kategori
     if category:
-        recommendations = recommendations[recommendations['Category'] == category]
+        category_col = f"Category_{category.replace(' ', '_')}"
+        recommendations = recommendations[recommendations[category_col] == 1]
+        #recommendations = recommendations[recommendations['Category'] == category]
     
     # Filter berdasarkan kota
     if city:
-        recommendations = recommendations[recommendations['City'] == city]
+        city_col = f"City_{city.replace(' ', '_')}"
+        recommendations = recommendations[recommendations[city_col] == 1]
+        #recommendations = recommendations[recommendations['City'] == city]
     
     # Jika tidak ada hasil setelah filter, gunakan fallback global
     if recommendations.empty:
         print("Tidak ada hasil yang cocok dengan filter. Menggunakan fallback berbasis kesamaan.")
         recommendations = tourism.copy()
         if category:
-            recommendations = recommendations[recommendations['Category'] == category]
+            category_col = f"Category_{category.replace(' ', '_')}"
+            recommendations = recommendations[recommendations[category_col] == 1]
+            #recommendations = recommendations[recommendations['Category'] == category]
         if city:
-            recommendations = recommendations[recommendations['City'] == city]
+            city_col = f"City_{city.replace(' ', '_')}"
+            recommendations = recommendations[recommendations[city_col] == 1]
+            #recommendations = recommendations[recommendations['City'] == city]
         subset_ids = recommendations['Place_Id']
         filtered_matrix = similarity_df.loc[subset_ids, subset_ids]
         recommendations['Cosine_Similarity'] = filtered_matrix.mean(axis=1)
         recommendations = recommendations.sort_values(by=['Cosine_Similarity', 'Rating'], ascending=[False, False]).head(top_n)
     
+     # tempat wisata yang disukai di posisi awal
+    top_place_info['Cosine_Similarity'] = 100  
+    recommendations = pd.concat([top_place_info, recommendations], ignore_index=True)
+    
+    # Hapus duplikasi 
+    recommendations = recommendations.drop_duplicates(subset='Place_Id', keep='first')
+    
+    # Sort ulang untuk memastikan tempat yang disukai tetap di posisi pertama
+    recommendations = recommendations.sort_values(by=['Cosine_Similarity', 'Rating'], ascending=[False, False]).head(top_n)
+    
     return recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating', 'Cosine_Similarity']]
 
 
 # === 5. Contoh Rekomendasi untuk Pengguna ===
-user_id = 3  # Gantilah dengan ID pengguna yang ingin diuji
+user_id = 1  # Gantilah dengan ID pengguna yang ingin diuji
 recommendations = recommend_place(user_id)
 #recommendations = recommend_place(user_id=3, category='Taman Hiburan', city='Surabaya')
 print(recommendations)

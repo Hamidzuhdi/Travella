@@ -9,9 +9,9 @@ import string
 app = Flask(__name__)
 
 # Load datasets
-tourism_rating = pd.read_csv('backend/data/tourism_rating.csv')
-tourism_with_id = pd.read_csv('backend/data/tourism_with_id.csv')
-user_data = pd.read_csv('backend/data/user.csv')  # Load user data
+tourism_rating = pd.read_csv('../data/tourism_rating.csv')
+tourism_with_id = pd.read_csv('../data/tourism_with_id.csv')
+user_data = pd.read_csv('../data/user.csv')  # Load user data
 
 # Preprocessing
 def preprocess_data():
