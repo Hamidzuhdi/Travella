@@ -82,6 +82,12 @@ def recommend():
     if user_ratings.empty:
         return jsonify({"error": "No data found for this user"}), 404
     
+    # Filter places visited by the user with a rating of 5
+    user_ratings = user_ratings[user_ratings['Place_Ratings'] == 5]
+    
+    if user_ratings.empty:
+        return jsonify({"error": "No places with a rating of 5 found for this user"}), 404
+    
     # Sort places visited by the user by rating (highest to lowest)
     sorted_ratings = user_ratings.sort_values(by='Place_Ratings', ascending=False)
     
