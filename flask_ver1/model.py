@@ -15,7 +15,7 @@ similarity_matrix = cosine_similarity(final_feature_matrix)
 similarity_df = pd.DataFrame(similarity_matrix, index=tourism['Place_Id'], columns=tourism['Place_Id'])
 
 # === 4. Sistem Rekomendasi ===
-def recommend_place(user_id, top_n=10, category=None, city=None):
+def recommend_place(user_id, top_n=50, category=None, city=None):
     # Ambil tempat wisata yang disukai pengguna berdasarkan rating
     liked_places = ratings[ratings['User_Id'] == user_id].sort_values(by='Place_Ratings', ascending=False)
 
