@@ -17,10 +17,10 @@ def index():
         password = request.form.get('password')
         print(f"{email}, {password}")
         try:
-            user = pd.read_csv('data/preprocessed_users.csv')
+            user = pd.read_csv('../flask_ver1/data/preprocessed_users.csv')
         except FileNotFoundError:
             flash("Data pengguna tidak ditemukan. Harap periksa file user.csv.", "error")
-            return render_template("login.html")
+            return render_template("templates/index.html")
         
         user_exist = user[(user['Email'] == email) & (user['Password'] == password)]
         if not user_exist.empty:
@@ -34,9 +34,9 @@ def index():
             return redirect(url_for("dashboard"))
         else:
             flash("Email atau password salah. Silakan coba lagi.", "error")
-            return render_template('login.html')
+            return render_template("templates/index.html")
             
-    return render_template('login.html')
+    return render_template("templates/index.html")
 
 
 
