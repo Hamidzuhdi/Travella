@@ -1,9 +1,9 @@
 import pandas as pd 
 from sklearn.metrics.pairwise import cosine_similarity
 
-tourism = pd.read_csv(r"flask_ver1\data\preprocessed_tourism.csv")
-ratings = pd.read_csv(r"flask_ver1\data\preprocessed_ratings.csv")
-users = pd.read_csv(r"flask_ver1\data\preprocessed_users.csv")
+tourism = pd.read_csv(r"data\preprocessed_tourism.csv")
+ratings = pd.read_csv(r"data\preprocessed_ratings.csv")
+users = pd.read_csv(r"data\preprocessed_users.csv")
 
 exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long']
 feature_column = [col for col in tourism.columns if col not in exclude_columns]
