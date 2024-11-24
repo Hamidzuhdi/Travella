@@ -5,9 +5,9 @@ import string
 import random
 
 # === 1. Load datasets ===
-tourism = pd.read_csv("data/tourism_with_id.csv")
-ratings = pd.read_csv("data/tourism_rating.csv")
-users = pd.read_csv("data/user.csv")
+tourism = pd.read_csv("backend/data/tourism_with_id.csv")
+ratings = pd.read_csv("backend/data/tourism_rating.csv")
+users = pd.read_csv("backend/data/user.csv")
 
 # Hapus kolom tidak diperlukan di tourism
 tourism.drop(columns=['Unnamed: 11', 'Unnamed: 12'], inplace=True, errors='ignore')
@@ -73,26 +73,29 @@ users["Password"] = [generate_password() for _ in range(len(users))]
 
 image_urls = {
     "Budaya": [
-        "https://img.freepik.com/free-photo/public-square-with-empty-road-floor-downtown_1127-3691.jpg",
-        "https://e1.pxfuel.com/desktop-wallpaper/469/445/desktop-wallpaper-kota-tua-jakarta.jpg",
-        "https://c1.staticflickr.com/5/4143/4904374767_1a45e48fce_b.jpg",
-        "https://thumbs.dreamstime.com/b/jakarta-indonesia-february-th-tourist-seen-fatahillah-museum-well-known-as-kota-tua-old-town-central-jakarta-indonesia-172466103.jpg",
-        "https://c0.wallpaperflare.com/preview/247/664/874/indonesia-museum-bank-mandiri.jpg"
+        "https://images.pexels.com/photos/6513506/pexels-photo-6513506.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/18889680/pexels-photo-18889680/free-photo-of-air-cairan-agama-hindu.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/3646848/pexels-photo-3646848.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/14479741/pexels-photo-14479741.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "https://images.pexels.com/photos/13005422/pexels-photo-13005422.jpeg?auto=compress&cs=tinysrgb&w=800"
     ],
+
     "Taman Hiburan": [
-        "https://png.pngtree.com/thumb_back/fw800/background/20230308/pngtree-taman-mini-indonesia-indah-is-a-culture-based-recreational-area-located-photo-image_1863506.jpg",
-        "https://3.bp.blogspot.com/-DHJNf4sHyRY/TuxGSbntmAI/AAAAAAAAAGc/D7eK3m9lcyI/s1600/Ancol.jpg",
-        "https://2.bp.blogspot.com/-eetDHEnCxKA/WRkkaT_7x-I/AAAAAAAAZh0/61Jk58D-w9YHpgrZnxcarLhJ6W5X5So7gCLcB/s1600/eco1.jpg",
-        "https://live.staticflickr.com/1273/1093244703_3312cec7d5_b.jpg",
-        "https://www.tiketmasuk.com/wp-content/uploads/2023/03/Taman-Menteng-jakarta-665x374.jpg"
+        "https://images.pexels.com/photos/22092310/pexels-photo-22092310/free-photo-of-lumba-lumba-di-akuarium.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/5692430/pexels-photo-5692430.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load",
+        "https://images.pexels.com/photos/5692435/pexels-photo-5692435.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/22046745/pexels-photo-22046745/free-photo-of-hitam-dan-putih-hitam-putih-hitam-putih-hitam-putih.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/29510962/pexels-photo-29510962.png?auto=compress&cs=tinysrgb&w=800" 
     ],
+
     "Cagar Alam": [
-        "https://statik.tempo.co/data/2021/06/25/id_1030566/1030566_720.jpg",
-        "https://img.okezone.com/content/2017/06/19/406/1719832/uncover-indonesia-menelusuri-keindahan-hutan-mangrove-bali-dGYNoGcgfZ.JPG",
-        "https://www.hargatiket.net/wp-content/uploads/2018/09/Gembira-Loka-Zoo.jpg",
-        "https://visitingjogja.jogjaprov.go.id/wp-content/uploads/2021/10/gl7.jpg",
-        "https://i1.wp.com/www.syakirurohman.net/wp-content/uploads/2015/10/air-terjun-2-warna.jpg?fit=1024%2C768&ssl=1"
+        "https://images.pexels.com/photos/16228243/pexels-photo-16228243/free-photo-of-scenery.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=800",
+        "https://images.pexels.com/photos/27528414/pexels-photo-27528414/free-photo-of-mangrove.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/238631/pexels-photo-238631.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "https://images.pexels.com/photos/29421651/pexels-photo-29421651/free-photo-of-monkey-perched-on-ornate-stone-statue-in-jungle.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=800",
+        "https://images.pexels.com/photos/28908035/pexels-photo-28908035/free-photo-of-serene-coastal-mangrove-forest-landscape.jpeg?auto=compress&cs=tinysrgb&w=800"
     ],
+
     "Tempat Ibadah": [
         "https://images.pexels.com/photos/10634440/pexels-photo-10634440.jpeg?auto=compress&cs=tinysrgb&w=800",
         "https://images.pexels.com/photos/3155276/pexels-photo-3155276.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -100,13 +103,15 @@ image_urls = {
         "https://images.pexels.com/photos/13688470/pexels-photo-13688470.jpeg?auto=compress&cs=tinysrgb&w=800",
         "https://images.pexels.com/photos/22065599/pexels-photo-22065599/free-photo-of-tomb-of-hazrat-shah-rukn-e-alam.jpeg?auto=compress&cs=tinysrgb&w=800"
     ],
+
     "Bahari": [
-        "https://wallpapercave.com/wp/wp3218393.jpg",
-        "https://indonesiakaya.com/wp-content/uploads/2020/10/pantai-goa-cina-1200.jpg",
-        "https://cdn.pixabay.com/photo/2023/02/11/23/53/goa-7783922_1280.jpg",
-        "https://4.bp.blogspot.com/-uMJDlNnjdo4/UaeMChakRMI/AAAAAAAAAyA/ghXUeAQdgyM/s1600/tumblr_mjjsu4FSUB1qlz3jlo7_1280.jpg",
-        "https://www.tempatwisata.pro/users_media/3092/Pantai-Goa-Cina-Cover.jpg"
+        "https://images.pexels.com/photos/29116365/pexels-photo-29116365/free-photo-of-scenic-pier-over-turquoise-waters-in-marsa-alam.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/18785841/pexels-photo-18785841/free-photo-of-a-sign-attached-to-a-palm-tree-on-the-beach.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/29355304/pexels-photo-29355304/free-photo-of-stunning-sunset-over-pulau-aman-beach-in-penang.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/68767/divers-underwater-ocean-swim-68767.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/11447571/pexels-photo-11447571.jpeg?auto=compress&cs=tinysrgb&w=800"
     ],
+
     "Pusat Perbelanjaan": [
         "https://res.cloudinary.com/wegowordpress/image/upload/h_531,w_750/v1492760459/IMG_20170418_095509_eefdyi.jpg",
         "https://img.inews.co.id/media/822/files/inews_new/2022/03/04/pasar_glodok_ist.jpg",
@@ -155,9 +160,9 @@ print(users.isnull().sum())
 
 # === 4. Ekspor hasil preprocessing ===
 # Simpan hasil preprocessing ke dalam file terpisah
-tourism.to_csv("data/preprocessed_tourism.csv", index=False)
-ratings.to_csv("data/preprocessed_ratings.csv", index=False)
-users.to_csv("data/preprocessed_users.csv", index=False)
+tourism.to_csv("backend/data/preprocessed_tourismnew.csv", index=False)
+ratings.to_csv("backend/data/preprocessed_ratingsnew.csv", index=False)
+users.to_csv("backend/data/preprocessed_usersnew.csv", index=False)
 
 print("Preprocessing selesai:")
 print("- tourism: preprocessed_tourism.csv")

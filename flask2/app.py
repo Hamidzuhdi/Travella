@@ -57,15 +57,13 @@ def dashboard():
     ]
     
     # Rekomendasi tempat
-    recommendations = recommend_place(user_id)
-    
-    if isinstance(recommendations, pd.DataFrame):
-        recommendations = recommendations.to_dict('records')  # Ubah menjadi list of dictionaries
+    top_recommendations, recommendations_by_category = recommend_place(user_id)
     
     return render_template(
-        'submit.html',  # Ubah ke template dashboard baru
+        'submit.html',
         user_id=user_id,
-        recommendations=recommendations,
+        top_recommendations=top_recommendations,
+        recommendations=recommendations_by_category,
         categories=categories
     )
  
