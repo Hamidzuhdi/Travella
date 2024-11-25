@@ -11,8 +11,15 @@ users = pd.read_csv(r"data\preprocessed_usersnew.csv")
 exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long', 'image_url']
 feature_columns = [col for col in tourism.columns if col not in exclude_columns]
 
+category_columns_encode = [col for col in feature_columns if col.startswith('Category_')]
+city_columns_encode = [col for col in feature_columns if col.startswith('City_')]
+
+tourism[category_columns_encode] *= 2
+tourism[city_columns_encode] *= 1.5
+
 # Ensure only numeric data is used in the feature matrix
-final_feature_matrix = tourism[feature_columns].select_dtypes(include=['number']).values
+#final_feature_matrix = tourism[feature_columns].select_dtypes(include=['number']).values
+final_feature_matrix = tourism[feature_columns].values
 
 # Compute cosine similarity
 similarity_matrix = cosine_similarity(final_feature_matrix)

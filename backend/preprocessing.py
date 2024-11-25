@@ -5,9 +5,9 @@ import string
 import random
 
 # === 1. Load datasets ===
-tourism = pd.read_csv("backend/data/tourism_with_id.csv")
-ratings = pd.read_csv("backend/data/tourism_rating.csv")
-users = pd.read_csv("backend/data/user.csv")
+tourism = pd.read_csv("data/tourism_with_id.csv")
+ratings = pd.read_csv("data/tourism_rating.csv")
+users = pd.read_csv("data/user.csv")
 
 # Hapus kolom tidak diperlukan di tourism
 tourism.drop(columns=['Unnamed: 11', 'Unnamed: 12'], inplace=True, errors='ignore')
@@ -137,8 +137,10 @@ scaler = MinMaxScaler()
 tourism[numeric_features] = scaler.fit_transform(tourism[numeric_features])
 
 # b. Encoding fitur kategorikal
-category_encoded = pd.get_dummies(tourism['Category'], prefix='Category')
-city_encoded = pd.get_dummies(tourism['City'], prefix='City')
+tourism['Category'] = tourism['Category'].str.replace(' ', '_')
+tourism['City'] = tourism['City'].str.replace(' ', '_')
+category_encoded = pd.get_dummies(tourism['Category'], prefix='Category', dtype=int)
+city_encoded = pd.get_dummies(tourism['City'], prefix='City', dtype=int)
 
 # Gabungkan encoding ke dataframe utama
 tourism = pd.concat([tourism, category_encoded, city_encoded], axis=1)
@@ -160,9 +162,9 @@ print(users.isnull().sum())
 
 # === 4. Ekspor hasil preprocessing ===
 # Simpan hasil preprocessing ke dalam file terpisah
-tourism.to_csv("backend/data/preprocessed_tourismnew.csv", index=False)
-ratings.to_csv("backend/data/preprocessed_ratingsnew.csv", index=False)
-users.to_csv("backend/data/preprocessed_usersnew.csv", index=False)
+tourism.to_csv("data/preprocessed_tourismnew.csv", index=False)
+ratings.to_csv("data/preprocessed_ratingsnew.csv", index=False)
+users.to_csv("data/preprocessed_usersnew.csv", index=False)
 
 print("Preprocessing selesai:")
 print("- tourism: preprocessed_tourism.csv")

@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 import pandas as pd
 from dotenv import load_dotenv
 import os
-from flask2.model import recommend_place
+#from flask2.model import recommend_place
+from model import recommend_place
 
 app = Flask(__name__)
 

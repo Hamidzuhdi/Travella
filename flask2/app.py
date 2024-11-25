@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 import pandas as pd
 from dotenv import load_dotenv
 import os
-from model import recommend_place
+#from model import recommend_place
+from modelnew import recommend_place, recomendation_by_category
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def index():
         if not user_exist.empty:
             #idUser = user_exist.iloc[0]['User_Id']
             idUser = int(user_exist.iloc[0]['User_Id'])
-
+            print(f"User ID: {idUser}")
            
             session['user_id'] = idUser
             
@@ -57,16 +58,52 @@ def dashboard():
     ]
     
     # Rekomendasi tempat
-    top_recommendations, recommendations_by_category = recommend_place(user_id)
+    top_recommendations, recommendations = recommend_place(user_id)
+    top_recommendations = top_recommendations.to_dict('records')
+    recommendations = recommendations.to_dict('records')
     
     return render_template(
         'submit.html',
         user_id=user_id,
         top_recommendations=top_recommendations,
-        recommendations=recommendations_by_category,
+        recommendations=recommendations,
         categories=categories
     )
  
+@app.route('/category/<category_slug>', methods=["GET"])
+def category_content(category_slug):
+    user_id = session.get('user_id')
+    
+    if not user_id:
+        flash("Sesi telah berakhir. Silakan login kembali.", "error")
+        return redirect(url_for('index'))
+    
+    categories = [
+        {"name": "Budaya", "slug": "budaya"},
+        {"name": "Taman Hiburan", "slug": "taman-hiburan"},
+        {"name": "Cagar Alam", "slug": "cagar-alam"},
+        {"name": "Bahari", "slug": "bahari"},
+        {"name": "Pusat Perbelanjaan", "slug": "pusat-perbelanjaan"},
+        {"name": "Tempat Ibadah", "slug": "tempat-ibadah"},
+    ]
+    
+    #untuk Slider 
+    top_recommendations, recommendations = recommend_place(user_id)
+    top_recommendations = top_recommendations.to_dict('records')
+    recommendations = recommendations.to_dict('records')
+    
+    # Rekomendasi tempat berdasarkan kategori
+    recommendations_by_category = recomendation_by_category(user_id, category=category_slug)
+    recommendations_by_category = recommendations_by_category.to_dict('records')
+    
+    return render_template(
+        'category.html',
+        user_id=user_id,
+        top_recommendations=top_recommendations,
+        recommendations=recommendations_by_category,
+        categories=categories
+    )
+
 
 @app.route('/logout')
 def logout():

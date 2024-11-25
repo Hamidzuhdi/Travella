@@ -140,16 +140,16 @@
     </header>
 
     <!-- Tombol Kategori -->
-<div class="category-buttons text-center mb-4">
-    <a href="{{ url_for('dashboard') }}">
-        <button  class="btn btn-outline-primary">Rekomendasi untuk kamu 🔥</button>
-    </a>
-    {% for category in categories %}
-        <a href="{{ url_for('category_content', category_slug=category['name']) }}">
-            <button  class="btn btn-outline-primary">{{ category.name }}</button>
+    <div class="category-buttons text-center mb-4">
+        <a href="{{ url_for('dashboard') }}">
+            <button  class="btn btn-outline-primary">Rekomendasi untuk kamu 🔥</button>
         </a>
-    {% endfor %}
-</div>
+        {% for category in categories %}
+            <a href="{{ url_for('category_content', category_slug=category['name']) }}">
+                <button  class="btn btn-outline-primary">{{ category.name }}</button>
+            </a>
+        {% endfor %}
+    </div>
 
     <!-- Categories Section -->
 <div class="categories-section text-center">
