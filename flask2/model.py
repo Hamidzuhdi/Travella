@@ -8,7 +8,7 @@ ratings = pd.read_csv(r"data\preprocessed_ratingsnew.csv")
 users = pd.read_csv(r"data\preprocessed_usersnew.csv")
 
 # Exclude columns that should not be used in the feature matrix
-exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long', 'imageurl']
+exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long', 'image_url']
 feature_columns = [col for col in tourism.columns if col not in exclude_columns]
 
 # Ensure only numeric data is used in the feature matrix

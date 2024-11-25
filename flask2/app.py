@@ -17,7 +17,7 @@ def index():
         password = request.form.get('password')
         print(f"{email}, {password}")
         try:
-            user = pd.read_csv('../flask_ver1/data/preprocessed_users.csv')
+            user = pd.read_csv('data/preprocessed_usersnew.csv')
         except FileNotFoundError:
             flash("Data pengguna tidak ditemukan. Harap periksa file user.csv.", "error")
             return render_template("index.html")

@@ -129,7 +129,7 @@
                         </div>
                         <a href="#">
                             <div class="thumb rounded">
-                                <div class="inner data-bg-image" data-bg-image="{{ rec['imageurl'] }}"></div>
+                                <div class="inner data-bg-image" data-bg-image="{{ rec['image_url'] }}"></div>
                             </div>
                         </a>
                     </div>
@@ -139,53 +139,34 @@
         </section>
     </header>
 
-	<!-- Tombol Kategori -->
-	<div class="category-buttons">
-		{% for category in categories %}
-			<button data-category="{{ category.slug }}">{{ category.name }}</button>
-		{% endfor %}
-	</div>
-	<script>
-		const categoryButtons = document.querySelectorAll('.category-buttons button');
-		const categoryGroups = document.querySelectorAll('.category-group');
+    <!-- Tombol Kategori -->
+<div class="category-buttons text-center mb-4">
+    <button data-category="all" class="btn btn-primary">Semua</button>
+    {% for category in categories %}
+        <button data-category="{{ category.name }}" class="btn btn-outline-primary">{{ category.name }}</button>
+    {% endfor %}
+</div>
 
-		categoryButtons.forEach(button => {
-			button.addEventListener('click', () => {
-				const category = button.getAttribute('data-category');
-
-				categoryGroups.forEach(group => {
-					if (group.querySelector('h6').textContent.trim() === category || category === 'all') {
-						group.style.display = 'block'; // Tampilkan grup kategori
-					} else {
-						group.style.display = 'none'; // Sembunyikan grup kategori
-					}
-				});
-			});
-		});
-	</script>
-
-	<!-- Categories Section -->
-	<div class="categories-section text-center">
-		{% for category, recs in recommendations.items() %}
-		<div class="category-group">
-			<h6>{{ category }}</h6>
-			<div class="cards-container row">
-				{% for rec in recs %}
-				<div class="card active col-md-6" style=" background-image: url('{{ rec['imageurl'] }}');">
-					<div class="card-content">
-						<span>{{ rec['Category'] }}</span>
-						<h4>{{ rec['Place_Name'] }}</h4>
-						<ul class="meta list-inline mb-0">
-							<li class="list-inline-item"><a href="#">{{ rec['City'] }}</a></li>
-							<li class="list-inline-item">Rating: {{ rec['Rating'] }}</li>
-						</ul>
-					</div>
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-		{% endfor %}
-	</div>
+<!-- Categories Section -->
+<div class="categories-section text-center">
+    {% for category, recs in recommendations.items() %}
+    <div class="category-group">
+        <div class="cards-container row">
+            {% for rec in recs %}
+            <div class="card col-md-4 mb-3" data-category="{{ rec['Category'] }}" style="background-image: url('{{ rec['image_url'] }}'); display: block;">                <div class="card-content p-3">
+                    <span class="badge bg-secondary">{{ rec['Category'] }}</span>
+                    <h5>{{ rec['Place_Name'] }}</h5>
+                    <ul class="meta list-inline mb-0">
+                        <li class="list-inline-item"><small>{{ rec['City'] }}</small></li>
+                        <li class="list-inline-item"><small>Rating: {{ rec['Rating'] }}</small></li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
     <!-- footer -->
     <footer>
@@ -302,13 +283,20 @@
         button.addEventListener('click', () => {
             const category = button.getAttribute('data-category');
 
+            // Filter cards based on category
             cards.forEach(card => {
                 if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.classList.add('active'); // Tampilkan kartu
+                    card.style.display = 'block'; // Show matching cards
                 } else {
-                    card.classList.remove('active'); // Sembunyikan kartu
+                    card.style.display = 'none'; // Hide non-matching cards
                 }
             });
+
+            // Update active button styling
+            buttons.forEach(btn => btn.classList.remove('btn-primary'));
+            buttons.forEach(btn => btn.classList.add('btn-outline-primary'));
+            button.classList.add('btn-primary');
+            button.classList.remove('btn-outline-primary');
         });
     });
 </script>
