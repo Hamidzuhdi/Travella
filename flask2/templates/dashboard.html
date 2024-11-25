@@ -151,26 +151,39 @@
     {% endfor %}
 </div>
 
+<div class="filter-section text-center mb-4">
+    <select id="cityFilter" class="form-select w-50 mx-auto">
+        <option value="all">Semua Kota</option>
+        {% for city in recommendations | map(attribute='City') | unique %}
+        <option value="{{ city }}">{{ city }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+
     <!-- Categories Section -->
-<div class="categories-section text-center">
-    <div class="category-group">
-        <div class="cards-container row d-flex align-items-center justify-content-center">
-            {% for rec in recommendations %}
-            <div class="card col-md-4 mb-3" data-category="{{ rec['Category'] }}" style="background-image: url('{{ rec['image_url'] }}'); display: block;">                <div class="card-content p-3">
-                    <span class="badge bg-secondary">{{ rec['Category'] }}</span>
-                    <h5>{{ rec['Place_Name'] }}</h5>
-                    <ul class="meta list-inline mb-0">
-                        <li class="list-inline-item"><small>{{ rec['City'] }}</small></li>
-                        <li class="list-inline-item"><small>Rating: {{ rec['Rating'] }}</small></li>
-                    </ul>
+    <div class="categories-section text-center">
+        <div class="category-group">
+            <div class="cards-container row d-flex align-items-center justify-content-center">
+                {% for rec in recommendations %}
+                <div class="card col-md-4 mb-3" 
+                     data-category="{{ rec['Category'] }}" 
+                     data-city="{{ rec['City'] }}" 
+                     style="background-image: url('{{ rec['image_url'] }}'); display: block;">
+                    <div class="card-content p-3">
+                        <span class="badge bg-secondary">{{ rec['Category'] }}</span>
+                        <h5>{{ rec['Place_Name'] }}</h5>
+                        <ul class="meta list-inline mb-0">
+                            <li class="list-inline-item"><small>{{ rec['City'] }}</small></li>
+                            <li class="list-inline-item"><small>Rating: {{ rec['Rating'] }}</small></li>
+                        </ul>
+                    </div>
                 </div>
-               
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
-  
-</div>
+    
 
     <!-- footer -->
     <footer>
@@ -279,6 +292,20 @@
 <script src="../static/js/slick.min.js"></script>
 <script src="../static/js/jquery.sticky-sidebar.min.js"></script>
 <script src="../static/js/custom.js"></script>
-
+<script>
+    document.getElementById('cityFilter').addEventListener('change', function () {
+        const selectedCity = this.value.toLowerCase();
+        const cards = document.querySelectorAll('.cards-container .card');
+    
+        cards.forEach(card => {
+            const cardCity = card.getAttribute('data-city').toLowerCase();
+            if (selectedCity === 'all' || cardCity === selectedCity) {
+                card.style.display = 'block'; 
+            } else {
+                card.style.display = 'none'; 
+            }
+        });
+    });
+    </script>
 </body>
 </html>
