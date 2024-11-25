@@ -63,7 +63,7 @@ def dashboard():
     recommendations = recommendations.to_dict('records')
     
     return render_template(
-        'submit.html',
+        'dashboard.html',
         user_id=user_id,
         top_recommendations=top_recommendations,
         recommendations=recommendations,
