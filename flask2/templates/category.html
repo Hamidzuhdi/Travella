@@ -93,7 +93,7 @@
                 
                 <!-- BUTTON LOGOUT -->
                 <div class="col-md-4">
-                    <a href="#" id="btn-logout" class="float-md-end">
+                    <a href="{{ url_for('logout') }}" id="btn-logout" class="float-md-end">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </div>
@@ -155,7 +155,7 @@
 
     <!-- Tombol Kategori -->
 	<div class="category-buttons">
-        <a>
+        <a href="{{ url_for('dashboard') }}">
             <button  class="btn btn-outline-primary">Rekomendasi untuk kamu 🔥</button>
         </a>
         {% for category in categories %}
@@ -174,25 +174,33 @@
             {% endfor %}
         </select>
     </div>
-    
 
-    <div class="card-container">
-        {% for rec in recommendations %}
-        <div class="card active" data-category="{{ rec['Category'] }}" style="background-image: url('{{ rec['image_url'] }}');">
-            <div class="card-content">
-                <span>{{ rec['Category'] }}</span>
-                <h4>{{ rec['Place_Name'] }}</h4>
-                <ul class="meta list-inline mb-0">
-                    <li class="list-inline-item"><a href="#">{{ rec['Author'] }}</a></li>
-                    <li class="list-inline-item">{{ rec['Date'] }}</li>
-                </ul>
+    
+    
+  <!-- Categories Section -->
+  <div class="categories-section text-center">
+    <div class="category-group">
+        <div class="card-container ">
+            {% for rec in recommendations %}
+            <div class="card col-md-4 mb-3" 
+                 data-category="{{ rec['Category'] }}" 
+                 data-city="{{ rec['City'] }}" 
+                 style="background-image: url('{{ rec['image_url'] }}'); display: block;">
+                <div class="card-content p-3">
+                    <span class="badge bg-secondary">{{ rec['Category'] }}</span>
+                    <h4>{{ rec['Place_Name'] }}</h4>
+                    <ul class="meta list-inline mb-0">
+                        <li class="list-inline-item"><small class="text-white">{{ rec['City'] }}</small></li>
+                        <li class="list-inline-item"><small class="text-white">Rating: {{ rec['Rating'] }}</small></li>
+                    </ul>
+                </div>
             </div>
+           
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
+</div>
     
-    
-
 
 
     
@@ -311,7 +319,7 @@
 <script>
     document.getElementById('cityFilter').addEventListener('change', function () {
         const selectedCity = this.value.toLowerCase();
-        const cards = document.querySelectorAll('.cards-container .card');
+        const cards = document.querySelectorAll('.card-container .card');
     
         cards.forEach(card => {
             const cardCity = card.getAttribute('data-city').toLowerCase();
