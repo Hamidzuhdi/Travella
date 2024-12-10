@@ -132,7 +132,8 @@
                             <h4 class="post-title"><a href="#">{{ rec['Place_Name'] }}</a></h4>
                             <ul class="meta list-inline mb-0">
                                 <li class="list-inline-item text-white">{{ rec['City'] }}</li>
-                                <li class="list-inline-item text-white">Rating: {{ rec['Rating'] }}</li>
+                                <li class="list-inline-item text-white">Rating: {{ rec['Denormalized_Rating'] }}</li>
+                                <li class="list-inline-item"><small class="text-white">Cosine Similarity: {{ "%.2f"|format(rec['Cosine_Similarity']) }}</small></li>
                             </ul>
                         </div>
                         <a href="#">
@@ -184,7 +185,8 @@
                     <h4>{{ rec['Place_Name'] }}</h4>
                     <ul class="meta list-inline mb-0">
                         <li class="list-inline-item"><small class="text-white">{{ rec['City'] }}</small></li>
-                        <li class="list-inline-item"><small class="text-white">Rating: {{ rec['Rating'] }}</small></li>
+                        <li class="list-inline-item"><small class="text-white">Rating: {{ rec['Denormalized_Rating'] }}</small></li>
+                        <li class="list-inline-item"><small class="text-white">Cosine Similarity: {{ "%.2f"|format(rec['Cosine_Similarity']) }}</small></li>
                     </ul>
                 </div>
             </div>
