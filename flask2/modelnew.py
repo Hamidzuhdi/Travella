@@ -7,6 +7,14 @@ ratings = pd.read_csv("data/preprocessed_ratingsnew.csv")
 #ratings = pd.read_csv("data/tourism_rating.csv")
 users = pd.read_csv("data/preprocessed_usersnew.csv")
 
+#  dataset asli
+tourism_original = pd.read_csv("data/tourism_with_id.csv")
+
+original_min = tourism_original['Rating'].min()
+original_max = tourism_original['Rating'].max()
+
+
+
 # === 2. Pisahkan Fitur untuk Rekomendasi ===
 # Ambil semua kolom fitur kecuali kolom ID dan kolom non-fitur dengan fitur2 dari pengolahan tf idf dan encoding kategori dan kota
 exclude_columns = ['Place_Id', 'Place_Name', 'Description', 'Category', 'City', 'Coordinate', 'Lat', 'Long', 'image_url']
@@ -23,6 +31,14 @@ similarity_matrix = cosine_similarity(final_feature_matrix)
 similarity_df = pd.DataFrame(similarity_matrix, index=tourism['Place_Id'], columns=tourism['Place_Id'])
 #print(similarity_df)
 
+
+# Fungsi untuk melakukan denormalisasi nilai rating
+def denormalize_rating(rating, min_rating, max_rating):
+    if pd.isna(rating):
+        return min_rating  
+    return (rating * (max_rating - min_rating)) + min_rating
+
+
 #Ini untuk halaman dashboard untuk utama sendiri rekomendasi berdasarkan rating terbesar dari user
 def recommend_place(user_id, top_n=10, category=None, city=None):
     # Ambil tempat wisata yang disukai pengguna
@@ -36,6 +52,9 @@ def recommend_place(user_id, top_n=10, category=None, city=None):
     # Ambil ID tempat wisata dengan rating tertinggi
     top_place_id = liked_places.iloc[0]['Place_Id']
     top_place_info = tourism[tourism['Place_Id'] == top_place_id].copy()
+    top_place_info['Denormalized_Rating'] = top_place_info['Rating'].apply(
+        lambda x: denormalize_rating(x, original_min, original_max)
+    )
     top_place_info['Cosine_Similarity'] = 100  # Tempat favorit pengguna
     
     # Dapatkan rekomendasi
@@ -49,16 +68,10 @@ def recommend_place(user_id, top_n=10, category=None, city=None):
     slider_recommendations = recommendations.head(5)
     
     
-    categorized_recommendations = {}
-    
-    # for index, row in recommendations.iterrows():
-    #     category = row['Category']
-    #     if category not in categorized_recommendations:
-    #         categorized_recommendations[category] = []
-    #     categorized_recommendations[category].append(row.to_dict())
+  
         
     
-    return slider_recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating', 'Cosine_Similarity', 'image_url']],recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating', 'Cosine_Similarity', 'image_url']]
+    return slider_recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating','Denormalized_Rating', 'Cosine_Similarity', 'image_url']],recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating', 'Denormalized_Rating', 'Cosine_Similarity', 'image_url']]
 
 
 # Ini untuk halaman dashboard untuk rekomendasi berdasarkan kategori
@@ -125,11 +138,16 @@ def get_recommendations(top_place_id=None, category=None, city=None, top_n=10):
         recommendations['Cosine_Similarity'] = filtered_matrix.mean(axis=1)
         recommendations = recommendations.sort_values(by=['Cosine_Similarity', 'Rating'], ascending=[False, False]).head(top_n)
     
+     #Denormalisasi rating
+    recommendations['Denormalized_Rating'] = recommendations['Rating'].apply(
+        lambda x: denormalize_rating(x, original_min, original_max)
+    )
+    
     recommendations = recommendations.drop_duplicates(subset='Place_Id', keep='first')
     
     # Sort berdasarkan cosine similarity dan rating
     recommendations = recommendations.sort_values(by=['Cosine_Similarity', 'Rating'], ascending=[False, False]).head(top_n)
-    return recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating', 'Cosine_Similarity', 'image_url']]
+    return recommendations[['Place_Id', 'Place_Name', 'Category', 'City', 'Rating','Denormalized_Rating' ,'Cosine_Similarity', 'image_url']]
 
 
 #recomendation = recommend_place(user_id = 2)
