@@ -69,23 +69,44 @@
 
     <!-- Form Login dalam Bentuk Pop-up (Sembunyikan dengan CSS) -->
     <div id="loginPopup" class="popup" style="display: none;">
-        <div class="popup-content">
-            <span class="close" onclick="hideLoginForm()">&times;</span>
-            <h3 class="widget-title">Login</h3>
-            <span class="newsletter-headline text-center mb-3">Lihat rekomendasi wisata untukmu!</span>
-            <!-- Form dengan action ke submit.html -->
-            <form action="/" method="post">
-                <div class="mb-2">
-                    <input class="form-control w-100 text-center" name="email" placeholder="Email" type="email" required>
-                </div>
-                <div class="mb-2">
-                    <input class="form-control w-100 text-center" name="password" placeholder="Password" type="password" required>
-                </div>
-                <button class="btn btn-default btn-full" type="submit">Submit</button>
-            </form>
-            <span class="newsletter-privacy text-center mt-3">By signing up, you agree to our <a href="#">Privacy Policy</a></span>
+    <div class="popup-content">
+        <span class="close" onclick="hideLoginForm()">&times;</span>
+        <h3 class="widget-title">Login</h3>
+        <span class="newsletter-headline text-center mb-3">Lihat rekomendasi wisata untukmu!</span>
+
+        <!-- Form login biasa -->
+        <form id="loginForm" action="/" method="post">
+            <div class="mb-2">
+                <input class="form-control w-100 text-center" id="email" name="email" placeholder="Email" type="email" required>
+            </div>
+            <div class="mb-2">
+                <input class="form-control w-100 text-center" id="password" name="password" placeholder="Password" type="password" required>
+            </div>
+            <button class="btn btn-default btn-full mb-3" type="submit">Login</button>
+        </form>
+
+        <!-- Tombol Akun Demo -->
+        <div class="text-center mt-3">
+            <small class="text-muted d-block mb-2">Atau coba salah satu akun demo ini:</small>
+            <div class="demo-accounts">
+                <button type="button" class="btn btn-sm btn-outline-light mb-2 w-100" onclick="fillDemo('hamid7944@gmail.com', 'oob9nf},')">
+                    hamid7944@gmail.com
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-light mb-2 w-100" onclick="fillDemo('levina3796@gmail.com', 'n.ls8X-A')">
+                    levina3796@gmail.com
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-light mb-2 w-100" onclick="fillDemo('rangga7722@gmail.com', '`4w-((_')">
+                    rangga7722@gmail.com
+                </button>
+            </div>
+            <small class="text-muted">Klik salah satu → langsung terisi → tekan Login</small>
         </div>
+
+        <span class="newsletter-privacy text-center mt-3">
+            By signing up, you agree to our <a href="#">Privacy Policy</a>
+        </span>
     </div>
+</div>
 
     <!-- Animated Mouse Wheel -->
     <span class="mouse">
@@ -138,6 +159,11 @@
     function hideLoginForm() {
         document.getElementById("loginPopup").style.display = "none";
     }
+    function fillDemo(email, pass) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = pass;
+    document.getElementById('loginForm').submit(); // auto submit
+}
 </script>
 
 </body>
